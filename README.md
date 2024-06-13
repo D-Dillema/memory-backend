@@ -63,7 +63,7 @@ bestandsnaam | omschrijving
 
 In deze repository vind je ook een directory `frontend`, met daarin één pagina: `index.html`. Deze pagina kun je gebruiken om je setup te checken. Start in deze directory een locale server op die naar een *andere poort* dan de backend zelf luistert (bijvoorbeeld poort 8080).
 
-```shellΩ
+```shell
 # in de directory frontend
 php -S localhost:8080
 ```
