@@ -1,6 +1,6 @@
 FROM php:alpine
 
-RUN apk add --no-cache curl
+RUN apk add --no-cache curl dos2unix
 
 # Install Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
@@ -14,6 +14,7 @@ WORKDIR /usr/src/memory-backend
 # Copy only the composer first to improve caching
 COPY composer.json composer.lock ./
 
+# Install dependencies
 RUN composer install --no-scripts --no-autoloader
 
 # Copy the rest of the application
@@ -22,11 +23,14 @@ COPY . .
 # Run Composer scripts to generate autoload files
 RUN composer dump-autoload --optimize
 
+# Convert create scripts to proper eol, othwerwise they won't execute properly
+RUN find ./create -type f -name "*.sh" -exec dos2unix {} \;
+
 # Create volume for the database
 VOLUME [ "/usr/src/memory-backend/var" ]
 
 # Create the database (shouldn't really be used in production environments)
-RUN ["php", "bin/console", "doctrine:schema:update", "--force"]
+RUN php bin/console doctrine:schema:update --force
 
 # Run the application
 CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
